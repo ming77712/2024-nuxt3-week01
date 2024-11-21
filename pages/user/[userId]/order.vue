@@ -1,6 +1,10 @@
 <script setup>
 import { Icon } from '@iconify/vue';
 
+definePageMeta({
+  name: 'user-order',
+});
+
 const roomId = 'a'; // for navigation demo
 </script>
 

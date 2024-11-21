@@ -1,4 +1,8 @@
 <script setup>
+definePageMeta({
+  name: 'user-profile',
+});
+
 const isEditPassword = ref(false);
 const isEditProfile = ref(false);
 </script>
