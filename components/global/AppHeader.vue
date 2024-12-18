@@ -100,7 +100,7 @@ onUnmounted(() => {
               </div>
             </li>
             <li class="d-md-none nav-item">
-              <NuxtLink to="/" class="nav-link p-4 text-neutral-0">
+              <NuxtLink to="/account/login" class="nav-link p-4 text-neutral-0">
                 會員登入
               </NuxtLink>
             </li>
