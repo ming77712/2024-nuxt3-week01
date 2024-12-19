@@ -1,5 +1,19 @@
 <script setup>
 import { Icon } from '@iconify/vue';
+import UserId from '../user/[userId].vue';
+
+const url = 'https://nuxr3.zeabur.app';
+const userRegisteInfo = ref({
+  name: '',
+  email: '',
+  password: '',
+  phone: '',
+  birthday: '',
+  address: {
+    zipcode: '',
+    detail: '',
+  },
+});
 
 const isEmailAndPasswordValid = ref(false);
 </script>
@@ -61,6 +75,7 @@ const isEmailAndPasswordValid = ref(false);
             class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
             placeholder="hello@exsample.com"
             type="email"
+            v-model="userRegisteInfo.email"
           />
         </div>
         <div class="mb-4 fs-8 fs-md-7">
@@ -72,6 +87,7 @@ const isEmailAndPasswordValid = ref(false);
             class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
             placeholder="請輸入密碼"
             type="password"
+            v-model="userRegisteInfo.password"
           />
         </div>
         <div class="mb-10 fs-8 fs-md-7">
@@ -101,6 +117,7 @@ const isEmailAndPasswordValid = ref(false);
             class="form-control p-4 text-neutral-100 fw-medium border-neutral-40 rounded-3"
             placeholder="請輸入姓名"
             type="text"
+            v-model="userRegisteInfo.name"
           />
         </div>
         <div class="mb-4 fs-8 fs-md-7">
@@ -112,6 +129,7 @@ const isEmailAndPasswordValid = ref(false);
             class="form-control p-4 text-neutral-100 fw-medium border-neutral-40 rounded-3"
             placeholder="請輸入手機號碼"
             type="tel"
+            v-model="userRegisteInfo.phone"
           />
         </div>
         <div class="mb-4 fs-8 fs-md-7">
