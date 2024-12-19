@@ -2,6 +2,9 @@
 import { Icon } from '@iconify/vue';
 import UserId from '../user/[userId].vue';
 
+const { $swal } = useNuxtApp();
+const router = useRouter();
+
 const url = 'https://nuxr3.zeabur.app';
 const userRegisteInfo = ref({
   name: '',

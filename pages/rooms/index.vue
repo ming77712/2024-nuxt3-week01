@@ -15,7 +15,7 @@ definePageMeta({
 const modules = ref([Autoplay, Navigation, Pagination]);
 const { roomList, roomImg, getRoomList } = useGetData();
 
-getRoomList();
+await getRoomList();
 
 // const importImage = (url) => {
 //   const image = new URL(url, import.meta.url);
@@ -95,107 +95,105 @@ getRoomList();
           各種房型，任您挑選
         </h2>
         <ul class="d-flex flex-column gap-6 gap-md-12 list-unstyled">
-          <ClientOnly>
-            <li
-              class="card flex-lg-row border-0 rounded-3xl overflow-hidden"
-              v-for="(item, idx) in roomList"
-              :key="item._id"
-            >
-              <div class="row">
-                <div class="col-12 col-lg-7">
-                  <swiper
-                    :modules="modules"
-                    :slides-per-view="1"
-                    navigation
-                    :pagination="{ clickable: true }"
-                    :autoplay="{
-                      delay: 2500,
-                      disableOnInteraction: false,
-                    }"
+          <li
+            class="card flex-lg-row border-0 rounded-3xl overflow-hidden"
+            v-for="(item, idx) in roomList"
+            :key="item._id"
+          >
+            <div class="row">
+              <div class="col-12 col-lg-7">
+                <swiper
+                  :modules="modules"
+                  :slides-per-view="1"
+                  navigation
+                  :pagination="{ clickable: true }"
+                  :autoplay="{
+                    delay: 2500,
+                    disableOnInteraction: false,
+                  }"
+                >
+                  <swiper-slide
+                    v-for="(url, index) in roomImg[idx]"
+                    :key="index"
                   >
-                    <swiper-slide
-                      v-for="(url, index) in roomImg[idx]"
-                      :key="index"
+                    <picture>
+                      <source :srcset="url" media="(min-width: 768px)" />
+                      <img
+                        class="w-100 object-fit-cover"
+                        :src="url"
+                        loading="lazy"
+                        :alt="index"
+                      />
+                    </picture>
+                  </swiper-slide>
+                </swiper>
+              </div>
+              <div class="col-12 col-lg-5">
+                <div class="card-body pe-md-10 py-md-10">
+                  <h3 class="card-title fs-2 fw-bold text-neutral-100">
+                    {{ item.name }}
+                  </h3>
+                  <p
+                    class="card-text mb-6 mb-md-10 fs-8 fs-md-7 fw-medium text-neutral-80"
+                  >
+                    {{ item.description }}
+                  </p>
+                  <ul class="d-flex gap-4 mb-6 mb-md-10 list-unstyled">
+                    <li
+                      class="card-info px-4 py-5 border border-primary-40 rounded-3"
                     >
-                      <picture>
-                        <source :srcset="url" media="(min-width: 768px)" />
-                        <img
-                          class="w-100 object-fit-cover"
-                          :src="url"
-                          loading="lazy"
-                          :alt="index"
-                        />
-                      </picture>
-                    </swiper-slide>
-                  </swiper>
-                </div>
-                <div class="col-12 col-lg-5">
-                  <div class="card-body pe-md-10 py-md-10">
-                    <h3 class="card-title fs-2 fw-bold text-neutral-100">
-                      {{ item.name }}
-                    </h3>
-                    <p
-                      class="card-text mb-6 mb-md-10 fs-8 fs-md-7 fw-medium text-neutral-80"
+                      <Icon
+                        class="mb-2 fs-5 text-primary-100"
+                        icon="fluent:slide-size-24-filled"
+                      />
+                      <p class="mb-0 fw-bold text-neutral-80 text-nowrap">
+                        {{ item.areaInfo }}
+                      </p>
+                    </li>
+                    <li
+                      class="card-info px-4 py-5 border border-primary-40 rounded-3"
                     >
-                      {{ item.description }}
-                    </p>
-                    <ul class="d-flex gap-4 mb-6 mb-md-10 list-unstyled">
-                      <li
-                        class="card-info px-4 py-5 border border-primary-40 rounded-3"
-                      >
-                        <Icon
-                          class="mb-2 fs-5 text-primary-100"
-                          icon="fluent:slide-size-24-filled"
-                        />
-                        <p class="mb-0 fw-bold text-neutral-80 text-nowrap">
-                          {{ item.areaInfo }}
-                        </p>
-                      </li>
-                      <li
-                        class="card-info px-4 py-5 border border-primary-40 rounded-3"
-                      >
-                        <Icon
-                          class="mb-2 fs-5 text-primary-100"
-                          icon="material-symbols:king-bed"
-                        />
-                        <p class="mb-0 fw-bold text-neutral-80 text-nowrap">
-                          {{ item.bedInfo }}
-                        </p>
-                      </li>
-                      <li
-                        class="card-info px-4 py-5 border border-primary-40 rounded-3"
-                      >
-                        <Icon
-                          class="mb-2 fs-5 text-primary-100"
-                          icon="ic:baseline-person"
-                        />
-                        <p class="mb-0 fw-bold text-neutral-80 text-nowrap">
-                          2-{{ item.maxPeople }} 人
-                        </p>
-                      </li>
-                    </ul>
-                    <div class="deco-line w-100 mb-6 mb-md-10" />
-                    <div
-                      class="d-flex justify-content-between align-items-center fs-7 fs-md-5 text-primary-100"
+                      <Icon
+                        class="mb-2 fs-5 text-primary-100"
+                        icon="material-symbols:king-bed"
+                      />
+                      <p class="mb-0 fw-bold text-neutral-80 text-nowrap">
+                        {{ item.bedInfo }}
+                      </p>
+                    </li>
+                    <li
+                      class="card-info px-4 py-5 border border-primary-40 rounded-3"
                     >
-                      <p class="mb-0 fw-bold">NT$ {{ item.price }}</p>
-                      <NuxtLink
-                        :to="{
-                          name: 'room-detail',
-                          params: {
-                            roomId: item._id,
-                          },
-                        }"
-                        class="icon-link icon-link-hover text-primary-100"
-                      >
-                        <Icon class="bi fs-5" icon="mdi:arrow-right" />
-                      </NuxtLink>
-                    </div>
+                      <Icon
+                        class="mb-2 fs-5 text-primary-100"
+                        icon="ic:baseline-person"
+                      />
+                      <p class="mb-0 fw-bold text-neutral-80 text-nowrap">
+                        2-{{ item.maxPeople }} 人
+                      </p>
+                    </li>
+                  </ul>
+                  <div class="deco-line w-100 mb-6 mb-md-10" />
+                  <div
+                    class="d-flex justify-content-between align-items-center fs-7 fs-md-5 text-primary-100"
+                  >
+                    <p class="mb-0 fw-bold">NT$ {{ item.price }}</p>
+                    <NuxtLink
+                      :to="{
+                        name: 'room-detail',
+                        params: {
+                          roomId: item._id,
+                        },
+                      }"
+                      class="icon-link icon-link-hover text-primary-100"
+                    >
+                      <Icon class="bi fs-5" icon="mdi:arrow-right" />
+                    </NuxtLink>
                   </div>
                 </div>
               </div>
-            </li>
-          </ClientOnly>
+            </div>
+          </li>
         </ul>
       </div>
     </section>

@@ -12,7 +12,15 @@ const modules = ref([Autoplay, Navigation, Pagination]);
 
 const roomSwiper = ref(null);
 
-const { newList, culinaryList, getNewList, getCulinaryList } = useGetData();
+const {
+  newList,
+  culinaryList,
+  roomList,
+  roomImg,
+  getNewList,
+  getCulinaryList,
+  getRoomList,
+} = useGetData();
 
 const slidePrev = () => {
   roomSwiper.value.$el.swiper.slidePrev();
@@ -22,8 +30,9 @@ const slideNext = () => {
   roomSwiper.value.$el.swiper.slideNext();
 };
 
-getNewList();
-getCulinaryList();
+await getNewList();
+await getCulinaryList();
+await getRoomList();
 </script>
 
 <template>
@@ -97,34 +106,32 @@ getCulinaryList();
             </div>
           </div>
           <div class="col-12 col-md-10 d-flex flex-column gap-10">
-            <ClientOnly>
+            <div
+              class="card bg-transparent border-0"
+              v-for="item in newList"
+              :key="item._id"
+            >
               <div
-                class="card bg-transparent border-0"
-                v-for="item in newList"
-                :key="item._id"
+                class="d-flex flex-column flex-md-row align-items-center gap-6"
               >
-                <div
-                  class="d-flex flex-column flex-md-row align-items-center gap-6"
-                >
-                  <picture>
-                    <source :srcset="item.image" media="(min-width: 576px)" />
-                    <img
-                      :src="item.image"
-                      class="w-100 rounded-3"
-                      :alt="item.title"
-                    />
-                  </picture>
-                  <div class="card-body p-0">
-                    <h3 class="card-title mb-2 mb-md-6 fw-bold">
-                      {{ item.title }}
-                    </h3>
-                    <p class="card-text text-neutral-80 fs-8 fs-md-7 fw-medium">
-                      {{ item.description }}
-                    </p>
-                  </div>
+                <picture>
+                  <source :srcset="item.image" media="(min-width: 576px)" />
+                  <img
+                    :src="item.image"
+                    class="w-100 rounded-3"
+                    :alt="item.title"
+                  />
+                </picture>
+                <div class="card-body p-0">
+                  <h3 class="card-title mb-2 mb-md-6 fw-bold">
+                    {{ item.title }}
+                  </h3>
+                  <p class="card-text text-neutral-80 fs-8 fs-md-7 fw-medium">
+                    {{ item.description }}
+                  </p>
                 </div>
               </div>
-            </ClientOnly>
+            </div>
           </div>
         </div>
       </div>
@@ -178,27 +185,22 @@ getCulinaryList();
           }"
           :loop="true"
         >
-          <swiper-slide v-for="(num, index) in 5" :key="index">
+          <swiper-slide v-for="(url, index) in roomImg[0]" :key="index">
             <picture>
-              <source
-                srcset="@/assets/images/home-room-1.png"
-                media="(min-width:768px)"
-              />
-              <img
-                class="w-100"
-                src="@/assets/images/home-room-sm-1.png"
-                alt="room-a"
-              />
+              <source :srcset="url" media="(min-width:768px)" />
+              <img class="w-100" :src="url" alt="room-a" />
             </picture>
           </swiper-slide>
         </swiper>
 
         <div class="room-intro-content text-neutral-0">
-          <h2 class="mb-2 mb-md-4 fw-bold">尊爵雙人房</h2>
+          <h2 class="mb-2 mb-md-4 fw-bold">{{ roomList[0].name }}</h2>
           <p class="mb-6 mb-md-10 fs-8 fs-md-7">
-            享受高級的住宿體驗，尊爵雙人房提供給您舒適寬敞的空間和精緻的裝潢。
+            {{ roomList[0].description }}
           </p>
-          <div class="mb-6 mb-md-10 fs-3 fw-bold">NT$ 10,000</div>
+          <div class="mb-6 mb-md-10 fs-3 fw-bold">
+            NT$ {{ roomList[0].price }}
+          </div>
           <NuxtLink
             to="/rooms"
             class="btn btn-neutral-0 d-flex justify-content-end align-items-center gap-3 w-100 p-5 p-md-10 mb-6 mb-md-10 text-end text-neutral-100 fs-7 fs-md-5 fw-bold border-0"
@@ -244,41 +246,39 @@ getCulinaryList();
           <div class="deco-line" />
         </div>
         <div class="row flex-nowrap overflow-x-auto">
-          <ClientOnly>
-            <div
-              class="col-10 col-md-6 col-xl-4"
-              v-for="item in culinaryList"
-              :key="item._id"
-            >
-              <div class="card position-relative border-0 rounded-3">
-                <picture>
-                  <source :srcset="item.image" media="(min-width: 576px)" />
-                  <img
-                    class="w-100 rounded-3"
-                    :src="item.image"
-                    :alt="item.title"
-                  />
-                </picture>
+          <div
+            class="col-10 col-md-6 col-xl-4"
+            v-for="item in culinaryList"
+            :key="item._id"
+          >
+            <div class="card position-relative border-0 rounded-3">
+              <picture>
+                <source :srcset="item.image" media="(min-width: 576px)" />
+                <img
+                  class="w-100 rounded-3"
+                  :src="item.image"
+                  :alt="item.title"
+                />
+              </picture>
+              <div
+                class="card-body position-absolute bottom-0 p-4 p-md-6 rounded-bottom-3 text-neutral-0"
+              >
                 <div
-                  class="card-body position-absolute bottom-0 p-4 p-md-6 rounded-bottom-3 text-neutral-0"
+                  class="d-flex justify-content-between align-items-center mb-4 mb-md-6"
                 >
+                  <h5 class="card-title mb-0 fw-bold">{{ item.title }}</h5>
                   <div
-                    class="d-flex justify-content-between align-items-center mb-4 mb-md-6"
+                    class="d-flex justify-content-between gap-4 text-neutral-40 fs-8 fs-md-7"
                   >
-                    <h5 class="card-title mb-0 fw-bold">{{ item.title }}</h5>
-                    <div
-                      class="d-flex justify-content-between gap-4 text-neutral-40 fs-8 fs-md-7"
-                    >
-                      <span class="fw-bold">{{ item.diningTime }}</span>
-                    </div>
+                    <span class="fw-bold">{{ item.diningTime }}</span>
                   </div>
-                  <p class="card-text fs-8 fs-md-7">
-                    {{ item.description }}
-                  </p>
                 </div>
+                <p class="card-text fs-8 fs-md-7">
+                  {{ item.description }}
+                </p>
               </div>
             </div>
-          </ClientOnly>
+          </div>
         </div>
       </div>
     </section>

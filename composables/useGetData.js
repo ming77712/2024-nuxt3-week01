@@ -1,6 +1,5 @@
 export const useGetData = () => {
   const url = 'https://nuxr3.zeabur.app';
-  const isLoading = ref(false);
   const newList = ref([]);
   const culinaryList = ref([]);
   const roomList = ref([]);
@@ -8,33 +7,26 @@ export const useGetData = () => {
 
   const getNewList = async () => {
     try {
-      isLoading.value = true;
       const { data } = await useFetch(`${url}/api/v1/home/news/`);
-      if (data) newList.value = data.value?.result || [];
+      if (data) newList.value = data.value.result || [];
     } catch (error) {
       alert(error.message);
-    } finally {
-      isLoading.value = false;
     }
   };
 
   const getCulinaryList = async () => {
     try {
-      isLoading.value = true;
       const { data } = await useFetch(`${url}/api/v1/home/culinary/`);
-      if (data) culinaryList.value = data.value?.result || [];
+      if (data) culinaryList.value = data.value.result || [];
     } catch (error) {
       alert(error.message);
-    } finally {
-      isLoading.value = false;
     }
   };
 
   const getRoomList = async () => {
     try {
-      isLoading.value = true;
       const { data } = await useFetch(`${url}/api/v1/rooms/`);
-      if (data) roomList.value = data.value?.result || [];
+      if (data) roomList.value = data.value.result || [];
       const tempData = data.value.result;
 
       tempData.forEach((room) => {
@@ -49,22 +41,17 @@ export const useGetData = () => {
       });
     } catch (error) {
       alert(error.message);
-    } finally {
-      isLoading.value = false;
     }
   };
 
   const getRoom = async (id) => {
     try {
-      isLoading.value = true;
       const { data } = await useFetch(`${url}/api/v1/rooms/${id}`);
       const { result } = data.value;
 
       return result;
     } catch (error) {
       alert(error.message);
-    } finally {
-      isLoading.value = false;
     }
   };
 

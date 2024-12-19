@@ -198,7 +198,7 @@ const handleDateChange = (bookingInfo) => {
                 class="d-flex flex-wrap row-gap-2 column-gap-10 p-6 mb-0 bg-neutral-0 fs-8 fs-md-7 rounded-3 list-unstyled"
               >
                 <li
-                  class="flex-item d-flex gap-2"
+                  class="d-flex gap-2"
                   v-for="(facility, index) in roomDetail.facilityInfo"
                   :key="index"
                 >
@@ -223,7 +223,7 @@ const handleDateChange = (bookingInfo) => {
                 class="d-flex flex-wrap row-gap-2 column-gap-10 p-6 mb-0 bg-neutral-0 fs-8 fs-md-7 rounded-3 list-unstyled"
               >
                 <li
-                  class="flex-item d-flex gap-2"
+                  class="d-flex gap-2"
                   v-for="(amenity, index) in roomDetail.amenityInfo"
                   :key="index"
                 >
@@ -376,7 +376,7 @@ const handleDateChange = (bookingInfo) => {
               </div>
 
               <h5 class="mb-0 text-primary-100 fw-bold">
-                {{ roomDetail.price }}
+                NT$ {{ roomDetail.price }}
               </h5>
               <NuxtLink
                 :to="{
