@@ -4,6 +4,7 @@ import { Icon } from '@iconify/vue';
 
 definePageMeta({
   name: 'room-detail',
+  layout: 'default',
 });
 
 const route = useRoute();

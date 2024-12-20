@@ -2,7 +2,9 @@
 import { Icon } from '@iconify/vue';
 
 definePageMeta({
-  name: 'user-order',
+  name: 'order',
+  layout: 'user',
+  middleware: 'auth',
 });
 
 const roomId = 'a'; // for navigation demo

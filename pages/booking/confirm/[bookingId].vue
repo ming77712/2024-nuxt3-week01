@@ -3,6 +3,8 @@ import { Icon } from '@iconify/vue';
 
 definePageMeta({
   name: 'booking-confirm',
+  layout: 'default',
+  middleware: 'auth',
 });
 
 const route = useRoute();

@@ -1,6 +1,8 @@
 <script setup>
 definePageMeta({
-  name: 'user-profile',
+  name: 'profile',
+  layout: 'user',
+  middleware: 'auth',
 });
 
 const isEditPassword = ref(false);

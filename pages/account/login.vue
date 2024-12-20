@@ -1,4 +1,49 @@
-<script setup></script>
+<script setup>
+const { $swal } = useNuxtApp();
+const router = useRouter();
+
+definePageMeta({
+  name: 'login',
+  layout: 'account',
+});
+
+const userLoginInfo = ref({
+  email: '',
+  password: '',
+});
+
+const processLogin = async () => {
+  try {
+    const { token } = await $fetch('api/v1/user/login', {
+      method: 'POST',
+      baseURL: 'https://nuxr3.zeabur.app/',
+      body: { ...userLoginInfo.value },
+    });
+
+    const auth = useCookie('auth');
+
+    auth.value = token;
+
+    await $swal.fire({
+      position: 'center',
+      icon: 'success',
+      title: '登入成功',
+      showConfirmButton: false,
+      timer: 1500,
+    });
+    router.push('/');
+  } catch (error) {
+    const { message } = error.response._data;
+    await $swal.fire({
+      position: 'center',
+      icon: 'error',
+      title: message,
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  }
+};
+</script>
 
 <template>
   <div class="px-5 px-md-0">
@@ -9,7 +54,7 @@
       <h1 class="text-neutral-0 fw-bold">立即開始旅程</h1>
     </div>
 
-    <form class="mb-10">
+    <form class="mb-10" @submit.prevent="processLogin">
       <div class="mb-4 fs-8 fs-md-7">
         <label class="mb-2 text-neutral-0 fw-bold" for="email">
           電子信箱
@@ -17,9 +62,9 @@
         <input
           id="email"
           class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
-          value="jessica@sample.com"
           placeholder="請輸入信箱"
           type="email"
+          v-model="userLoginInfo.email"
         />
       </div>
       <div class="mb-4 fs-8 fs-md-7">
@@ -27,9 +72,9 @@
         <input
           id="password"
           class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
-          value="jessica@sample.com"
           placeholder="請輸入密碼"
           type="password"
+          v-model="userLoginInfo.password"
         />
       </div>
       <div
@@ -55,7 +100,7 @@
       </div>
       <button
         class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold"
-        type="button"
+        type="submit"
       >
         會員登入
       </button>
@@ -64,7 +109,7 @@
     <p class="mb-0 fs-8 fs-md-7">
       <span class="me-2 text-neutral-0 fw-medium">沒有會員嗎？</span>
       <NuxtLink
-        to="signup"
+        to="account/signup"
         class="text-primary-100 fw-bold text-decoration-underline bg-transparent border-0"
       >
         <span>前往註冊</span>

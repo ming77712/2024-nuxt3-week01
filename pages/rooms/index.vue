@@ -10,6 +10,7 @@ import 'swiper/css/pagination';
 
 definePageMeta({
   name: 'rooms',
+  layout: 'default',
 });
 
 const modules = ref([Autoplay, Navigation, Pagination]);

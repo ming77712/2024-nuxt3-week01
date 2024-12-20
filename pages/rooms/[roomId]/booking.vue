@@ -4,6 +4,8 @@ import { Icon } from '@iconify/vue';
 
 definePageMeta({
   name: 'booking',
+  layout: 'default',
+  middleware: 'auth',
 });
 
 const router = useRouter();

@@ -8,6 +8,11 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
+definePageMeta({
+  name: 'home',
+  layout: 'default',
+});
+
 const modules = ref([Autoplay, Navigation, Pagination]);
 
 const roomSwiper = ref(null);

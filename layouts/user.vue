@@ -1,6 +1,37 @@
-<script setup></script>
+<script setup>
+import AppHeader from '../components/global/AppHeader.vue';
+import AppFooter from '../components/global/AppFooter.vue';
+
+const route = useRoute();
+
+const userName = ref('');
+const token = useCookie('auth');
+console.log(token);
+const getUserName = async () => {
+  try {
+    const response = await $fetch('api/v1/user/', {
+      method: 'GET',
+      baseURL: 'https://nuxr3.zeabur.app/',
+      headers: {
+        Authorization: `Bearer ${token.value}`,
+      },
+    });
+
+    if (response.status && response.result?.name) {
+      userName.value = response.result.name;
+    } else {
+      console.error('無法取得使用者名稱，請檢查 API 回應:', response);
+    }
+  } catch (error) {
+    console.error('API 請求錯誤:', error);
+  }
+};
+
+onMounted(getUserName);
+</script>
 
 <template>
+  <AppHeader />
   <main class="pt-18 pt-md-30 bg-neutral-120">
     <section class="position-relative">
       <picture>
@@ -20,7 +51,7 @@
           class="hero-content d-flex flex-column flex-md-row justify-content-center justify-content-md-start align-items-md-center gap-4 gap-md-6 mx-5 my-10 mx-md-0 my-md-0"
         >
           <img class="avatar" src="@/assets/images/avatar-6.png" alt="avatar" />
-          <h1 class="text-neutral-0 fw-bold">Hello，Jessica</h1>
+          <h1 class="text-neutral-0 fw-bold">Hello， {{ userName }}</h1>
         </div>
       </div>
     </section>
@@ -31,9 +62,9 @@
           <li class="nav-item position-relative">
             <NuxtLink
               :to="{
-                name: 'user-profile',
+                name: 'profile',
                 params: {
-                  userId: $route.params.userId,
+                  userId: route.params.userId,
                 },
               }"
               exact-active-class="text-primary-100"
@@ -45,9 +76,9 @@
           <li class="nav-item position-relative">
             <NuxtLink
               :to="{
-                name: 'user-order',
+                name: 'order',
                 params: {
-                  userId: $route.params.userId,
+                  userId: route.params.userId,
                 },
               }"
               exact-active-class="text-primary-100"
@@ -74,6 +105,7 @@
       />
     </picture>
   </main>
+  <AppFooter />
 </template>
 
 <style lang="scss" scoped>

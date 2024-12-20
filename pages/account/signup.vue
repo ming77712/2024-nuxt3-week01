@@ -5,20 +5,74 @@ import UserId from '../user/[userId].vue';
 const { $swal } = useNuxtApp();
 const router = useRouter();
 
-const url = 'https://nuxr3.zeabur.app';
+definePageMeta({
+  name: 'signup',
+  layout: 'account',
+});
+
+const isEmailAndPasswordValid = ref(false);
+
 const userRegisteInfo = ref({
   name: '',
   email: '',
   password: '',
   phone: '',
   birthday: '',
-  address: {
-    zipcode: '',
-    detail: '',
-  },
 });
+const birthYear = ref('');
+const birthMouth = ref('');
+const birthDay = ref('');
+const city = ref('');
+const dist = ref('');
+const road = ref('');
 
-const isEmailAndPasswordValid = ref(false);
+const processRegistration = async () => {
+  const userInfo = {
+    name: userRegisteInfo.value.name,
+    email: userRegisteInfo.value.email,
+    password: userRegisteInfo.value.password,
+    phone: userRegisteInfo.value.phone,
+    birthday: `${birthYear.value}/${birthMouth.value}/${birthDay.value}`,
+    address: {
+      zipcode: 802,
+      detail: `${city.value}${dist.value}${road.value}`,
+    },
+  };
+
+  try {
+    const response = await $fetch('api/v1/user/signup', {
+      method: 'POST',
+      baseURL: 'https://nuxr3.zeabur.app/',
+      body: userInfo,
+    });
+    if (response.status) {
+      await $swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: '註冊成功',
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      router.push('account/login');
+    } else {
+      await $swal.fire({
+        position: 'center',
+        icon: 'error',
+        title: `註冊失敗：${response.message}`,
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
+  } catch (error) {
+    await $swal.fire({
+      position: 'center',
+      icon: 'error',
+      title: error,
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  }
+};
 </script>
 
 <template>
@@ -112,7 +166,11 @@ const isEmailAndPasswordValid = ref(false);
           下一步
         </button>
       </form>
-      <form :class="{ 'd-none': !isEmailAndPasswordValid }" class="mb-4">
+      <form
+        :class="{ 'd-none': !isEmailAndPasswordValid }"
+        class="mb-4"
+        @submit.prevent="processRegistration"
+      >
         <div class="mb-4 fs-8 fs-md-7">
           <label class="mb-2 text-neutral-0 fw-bold" for="name"> 姓名 </label>
           <input
@@ -141,23 +199,26 @@ const isEmailAndPasswordValid = ref(false);
             <select
               id="birth"
               class="form-select p-4 text-neutral-80 fw-medium rounded-3"
+              v-model="birthYear"
             >
-              <option
-                v-for="year in 65"
-                :key="year"
-                value="`${year + 1958} 年`"
-              >
-                {{ year + 1958 }} 年
+              <option v-for="year in 65" :key="year" :value="year + 1958">
+                {{ year + 1958 }}年
               </option>
             </select>
-            <select class="form-select p-4 text-neutral-80 fw-medium rounded-3">
-              <option v-for="month in 12" :key="month" value="`${month} 月`">
-                {{ month }} 月
+            <select
+              class="form-select p-4 text-neutral-80 fw-medium rounded-3"
+              v-model="birthMouth"
+            >
+              <option v-for="month in 12" :key="month" :value="month">
+                {{ month }}月
               </option>
             </select>
-            <select class="form-select p-4 text-neutral-80 fw-medium rounded-3">
-              <option v-for="day in 30" :key="day" value="`${day} 日`">
-                {{ day }} 日
+            <select
+              class="form-select p-4 text-neutral-80 fw-medium rounded-3"
+              v-model="birthDay"
+            >
+              <option v-for="day in 30" :key="day" :value="day">
+                {{ day }}日
               </option>
             </select>
           </div>
@@ -170,6 +231,7 @@ const isEmailAndPasswordValid = ref(false);
             <div class="d-flex gap-2 mb-2">
               <select
                 class="form-select p-4 text-neutral-80 fw-medium rounded-3"
+                v-model="city"
               >
                 <option value="臺北市">臺北市</option>
                 <option value="臺中市">臺中市</option>
@@ -177,6 +239,7 @@ const isEmailAndPasswordValid = ref(false);
               </select>
               <select
                 class="form-select p-4 text-neutral-80 fw-medium rounded-3"
+                v-model="dist"
               >
                 <option value="前金區">前金區</option>
                 <option value="鹽埕區">鹽埕區</option>
@@ -188,6 +251,7 @@ const isEmailAndPasswordValid = ref(false);
               type="text"
               class="form-control p-4 rounded-3"
               placeholder="請輸入詳細地址"
+              v-model="road"
             />
           </div>
         </div>
@@ -207,7 +271,7 @@ const isEmailAndPasswordValid = ref(false);
         </div>
         <button
           class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold"
-          type="button"
+          type="submit"
         >
           完成註冊
         </button>
@@ -217,7 +281,7 @@ const isEmailAndPasswordValid = ref(false);
     <p class="mb-0 fs-8 fs-md-7">
       <span class="me-2 text-neutral-0 fw-medium">已經有會員了嗎？</span>
       <NuxtLink
-        to="login"
+        to="account/login"
         class="text-primary-100 fw-bold text-decoration-underline bg-transparent border-0"
       >
         <span>立即登入</span>
