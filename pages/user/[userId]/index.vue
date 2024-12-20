@@ -4,7 +4,7 @@ navigateTo(`/user/${route.params.userId}/profile`);
 </script>
 
 <template>
-  <div>Index</div>
+  <div></div>
 </template>
 
 <style scoped lang="scss"></style>

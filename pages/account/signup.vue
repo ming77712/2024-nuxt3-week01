@@ -45,6 +45,7 @@ const processRegistration = async () => {
       baseURL: 'https://nuxr3.zeabur.app/',
       body: userInfo,
     });
+
     if (response.status) {
       await $swal.fire({
         position: 'center',
@@ -53,7 +54,7 @@ const processRegistration = async () => {
         showConfirmButton: false,
         timer: 1500,
       });
-      router.push('account/login');
+      router.push('/account/login');
     } else {
       await $swal.fire({
         position: 'center',
@@ -67,9 +68,9 @@ const processRegistration = async () => {
     await $swal.fire({
       position: 'center',
       icon: 'error',
-      title: error,
+      title: error.response._data.message,
       showConfirmButton: false,
-      timer: 1500,
+      timer: 100000,
     });
   }
 };
@@ -281,7 +282,7 @@ const processRegistration = async () => {
     <p class="mb-0 fs-8 fs-md-7">
       <span class="me-2 text-neutral-0 fw-medium">已經有會員了嗎？</span>
       <NuxtLink
-        to="account/login"
+        to="/account/login"
         class="text-primary-100 fw-bold text-decoration-underline bg-transparent border-0"
       >
         <span>立即登入</span>

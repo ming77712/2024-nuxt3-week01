@@ -6,7 +6,7 @@ const route = useRoute();
 
 const userName = ref('');
 const token = useCookie('auth');
-console.log(token);
+
 const getUserName = async () => {
   try {
     const response = await $fetch('api/v1/user/', {
