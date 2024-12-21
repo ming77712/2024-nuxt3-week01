@@ -365,7 +365,11 @@ const handleDateChange = (bookingInfo) => {
                       }"
                       class="btn btn-neutral-0 p-4 border border-neutral-40 rounded-circle"
                       type="button"
-                      @click="bookingPeople++"
+                      @click="
+                        bookingPeople < roomDetail.maxPeople
+                          ? bookingPeople++
+                          : bookingPeople
+                      "
                     >
                       <Icon
                         class="fs-5 text-neutral-100"

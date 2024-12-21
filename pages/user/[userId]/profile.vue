@@ -5,12 +5,85 @@ definePageMeta({
   middleware: 'auth',
 });
 
+//todo
+
 const isEditPassword = ref(false);
 const isEditProfile = ref(false);
+const token = useCookie('auth');
+const userData = ref({});
+const addressDetail = ref('');
+
+const passwordForm = ref({
+  oldPassword: '',
+  newPassword: '',
+  confirmPassword: '',
+});
+
+const profileForm = ref({
+  name: '',
+  phone: '',
+});
+
+const birthYear = ref('');
+const birthMouth = ref('');
+const birthDay = ref('');
+
+const city = ref('');
+const dist = ref('');
+const road = ref('');
+
+const getUserInfo = async () => {
+  if (!token.value) return;
+
+  try {
+    const response = await $fetch('/v1/user/', {
+      method: 'GET',
+      baseURL: 'https://nuxr3.zeabur.app/api',
+      headers: {
+        Authorization: `Bearer ${token.value}`,
+      },
+    });
+
+    if (response.status && response?.result) {
+      userData.value = response.result;
+      console.log('userData:', userData.value);
+      initProfileForm();
+    } else {
+      console.error('無法取得使用者名稱', response);
+    }
+  } catch (error) {
+    console.error('API 請求錯誤:', error);
+  }
+};
+
+const initProfileForm = () => {
+  if (userData.value) {
+    profileForm.name = userData.value.name;
+    profileForm.phone = userData.value.phone;
+
+    const birthDate = new Date(userData.value.birthday);
+    birthYear.value = birthDate.getFullYear();
+    birthMouth.value = birthDate.getMonth() + 1;
+    birthDay.value = birthDate.getDate();
+
+    addressDetail.value = userData.value.address.detail;
+  }
+};
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return `${date.getFullYear()} 年 ${
+    date.getMonth() + 1
+  } 月 ${date.getDate()} 日`;
+};
+
+onMounted(() => {
+  getUserInfo();
+});
 </script>
 
 <template>
-  <div class="row gap-6 gap-md-0">
+  <div class="row gap-6 gap-md-0" v-if="userData">
     <div class="col-12 col-md-5">
       <section
         class="rounded-3xl d-flex flex-column gap-6 gap-md-10 p-6 p-md-10 bg-neutral-0"
@@ -21,7 +94,7 @@ const isEditProfile = ref(false);
             <p class="mb-2 text-neutral-80 fw-medium">電子信箱</p>
             <span
               class="form-control pe-none p-0 text-neutral-100 fw-bold border-0"
-              >Jessica@exsample.com</span
+              >{{ userData.email }}</span
             >
           </div>
 
@@ -129,7 +202,7 @@ const isEditProfile = ref(false);
                 'p-4': isEditProfile,
               }"
               type="text"
-              value="Jessica Ｗang"
+              :value="userData.name"
             />
           </div>
 
@@ -153,7 +226,7 @@ const isEditProfile = ref(false);
                 'p-4': isEditProfile,
               }"
               type="tel"
-              value="+886 912 345 678"
+              :value="userData.phone"
             />
           </div>
 
@@ -217,7 +290,7 @@ const isEditProfile = ref(false);
             <span
               class="form-control pe-none p-0 text-neutral-100 fw-bold border-0"
               :class="{ 'd-none': isEditProfile }"
-              >高雄市新興區六角路 123 號</span
+              >{{ userData.address.detail }}</span
             >
             <div :class="{ 'd-none': !isEditProfile }">
               <div class="d-flex gap-2 mb-2">

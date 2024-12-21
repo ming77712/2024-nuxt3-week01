@@ -1,8 +1,52 @@
 <script setup>
 import { Icon } from '@iconify/vue';
+const { $swal } = useNuxtApp();
 
 const route = useRoute();
 const transparentBgRoute = ['home', 'rooms'];
+
+const token = useCookie('auth');
+const isLogin = ref(false);
+const userName = ref('');
+const userId = ref('');
+
+const getUserInfo = async () => {
+  if (!token.value) return;
+
+  try {
+    const response = await $fetch('/v1/user/', {
+      method: 'GET',
+      baseURL: 'https://nuxr3.zeabur.app/api',
+      headers: {
+        Authorization: `Bearer ${token.value}`,
+      },
+    });
+
+    if (response.status && response.result?.name) {
+      userName.value = response.result.name;
+      userId.value = response.result._id;
+      isLogin.value = true;
+    } else {
+      console.error('無法取得使用者名稱', response);
+    }
+  } catch (error) {
+    console.error('API 請求錯誤:', error);
+  }
+};
+
+const logout = async () => {
+  token.value = null;
+  userName.value = null;
+  isLogin.value = false;
+  await $swal.fire({
+    position: 'center',
+    icon: 'success',
+    title: '您已登出',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  location.reload();
+};
 
 const isTransparentRoute = computed(() =>
   transparentBgRoute.includes(route.name)
@@ -15,6 +59,7 @@ const handleScroll = () => {
 };
 
 onMounted(() => {
+  getUserInfo();
   window.addEventListener('scroll', handleScroll);
 });
 
@@ -65,45 +110,64 @@ onUnmounted(() => {
                 客房旅宿
               </NuxtLink>
             </li>
-            <li class="d-none d-md-block nav-item">
-              <div class="btn-group">
-                <button
-                  type="button"
-                  class="nav-link d-flex gap-2 p-4 text-neutral-0"
-                  data-bs-toggle="dropdown"
+            <!-- 未登入時顯示登入與註冊按鈕 -->
+            <template v-if="!isLogin">
+              <li class="nav-item">
+                <NuxtLink
+                  to="/account/login"
+                  class="nav-link p-4 text-neutral-0"
                 >
-                  <Icon class="fs-5" icon="mdi:account-circle-outline" />
-                  Jessica
-                </button>
-                <ul
-                  class="dropdown-menu py-3 overflow-hidden"
-                  style="right: 0; left: auto; border-radius: 20px"
+                  登入
+                </NuxtLink>
+              </li>
+              <li class="nav-item">
+                <NuxtLink
+                  to="/account/signup"
+                  class="nav-link p-4 text-neutral-0"
                 >
-                  <li>
-                    <NuxtLink
-                      class="dropdown-item px-6 py-4"
-                      to="/user/1/profile"
-                    >
-                      我的帳戶
-                    </NuxtLink>
-                  </li>
-                  <li>
-                    <NuxtLink
-                      class="dropdown-item px-6 py-4"
-                      to="/account/login"
-                    >
-                      登出
-                    </NuxtLink>
-                    <a></a>
-                  </li>
-                </ul>
-              </div>
-            </li>
-            <li class="d-md-none nav-item">
-              <NuxtLink to="/account/login" class="nav-link p-4 text-neutral-0">
-                會員登入
-              </NuxtLink>
-            </li>
+                  註冊
+                </NuxtLink>
+              </li>
+            </template>
+
+            <!-- 已登入時顯示使用者名稱與下拉選單 -->
+            <template v-else>
+              <li class="nav-item">
+                <div class="btn-group">
+                  <button
+                    type="button"
+                    class="nav-link d-flex gap-2 p-4 text-neutral-0"
+                    data-bs-toggle="dropdown"
+                  >
+                    <Icon class="fs-5" icon="mdi:account-circle-outline" />
+                    {{ userName }}
+                  </button>
+                  <ul
+                    class="dropdown-menu py-3 overflow-hidden"
+                    style="right: 0; left: auto; border-radius: 20px"
+                  >
+                    <li>
+                      <NuxtLink
+                        v-if="userId"
+                        :to="{
+                          name: 'profile',
+                          params: { userId: userId },
+                        }"
+                        class="dropdown-item px-6 py-4"
+                      >
+                        我的帳戶
+                      </NuxtLink>
+                    </li>
+                    <li>
+                      <button @click="logout" class="dropdown-item px-6 py-4">
+                        登出
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+            </template>
+
             <li class="nav-item">
               <NuxtLink
                 :to="{

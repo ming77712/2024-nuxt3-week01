@@ -12,9 +12,12 @@ const userLoginInfo = ref({
   password: '',
 });
 
+const emailCookie = useCookie('rememberEmail');
+const rememberEmail = ref(false);
+
 const processLogin = async () => {
   try {
-    const { token } = await $fetch('api/v1/user/login', {
+    const { token, result } = await $fetch('api/v1/user/login', {
       method: 'POST',
       baseURL: 'https://nuxr3.zeabur.app/',
       body: { ...userLoginInfo.value },
@@ -23,13 +26,14 @@ const processLogin = async () => {
     const auth = useCookie('auth');
 
     auth.value = token;
+    checkRememberEmail(result.email);
 
     await $swal.fire({
       position: 'center',
       icon: 'success',
       title: '登入成功',
       showConfirmButton: false,
-      timer: 1500,
+      timer: 3000,
     });
     router.push('/');
   } catch (error) {
@@ -39,10 +43,25 @@ const processLogin = async () => {
       icon: 'error',
       title: message,
       showConfirmButton: false,
-      timer: 1500,
+      timer: 3000,
     });
   }
 };
+
+const checkRememberEmail = (email) => {
+  if (rememberEmail.value) {
+    emailCookie.value = email;
+  } else {
+    emailCookie.value = null;
+  }
+};
+
+onMounted(() => {
+  if (emailCookie.value) {
+    userLoginInfo.value.email = emailCookie.value;
+    rememberEmail.value = true;
+  }
+});
 </script>
 
 <template>
@@ -75,6 +94,7 @@ const processLogin = async () => {
           placeholder="請輸入密碼"
           type="password"
           v-model="userLoginInfo.password"
+          autocomplete
         />
       </div>
       <div
@@ -85,7 +105,7 @@ const processLogin = async () => {
             id="remember"
             class="form-check-input"
             type="checkbox"
-            value=""
+            v-model="rememberEmail"
           />
           <label class="form-check-label fw-bold" for="remember">
             記住帳號

@@ -52,7 +52,7 @@ const processRegistration = async () => {
         icon: 'success',
         title: '註冊成功',
         showConfirmButton: false,
-        timer: 1500,
+        timer: 3000,
       });
       router.push('/account/login');
     } else {
@@ -61,7 +61,7 @@ const processRegistration = async () => {
         icon: 'error',
         title: `註冊失敗：${response.message}`,
         showConfirmButton: false,
-        timer: 1500,
+        timer: 3000,
       });
     }
   } catch (error) {
@@ -70,7 +70,7 @@ const processRegistration = async () => {
       icon: 'error',
       title: error.response._data.message,
       showConfirmButton: false,
-      timer: 100000,
+      timer: 3000,
     });
   }
 };
